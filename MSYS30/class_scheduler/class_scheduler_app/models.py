@@ -17,7 +17,7 @@ class subjectslist(models.IntegerChoices):
     esp  = 7, "Edukasyon sa Pagpapakatao"
     tle = 8, "Technology and Livelihood Education"
     mapeh = 9, "MAPEH"
-    ict = 10, "ICT"
+    homeroom = 10, "HGP"
 
 class section(models.Model): 
     name = models.CharField(max_length=100)
