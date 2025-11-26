@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from algorithms.services import *
 
 # Create your views here.
 def hello_world(request): 

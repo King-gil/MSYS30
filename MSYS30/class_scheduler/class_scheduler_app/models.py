@@ -46,6 +46,9 @@ class teacher(models.Model):
     max_weekly_hours = models.IntegerField(default=30)
     subject_taught = models.IntegerField(choices=subjectslist.choices)
 
+    def __str__(self):
+        return f"{self.teacher}"
+
 class days(models.TextChoices):
     monday = "M", "Monday"
     tuesday = "T", "Tuesday"
@@ -61,13 +64,20 @@ class teacheravailability(models.Model):
     end_time = models.TimeField()
     is_available = models.BooleanField(default=True)
 
+
 class roomtype(models.TextChoices):
     classroom = "C", "Classroom"
     laboratory = "L", "Laboratory"
     gym = "G", "Gymnasium"
 
+class buildings(models.TextChoices):
+    luneta = "L", "Luneta"
+    intramuros = "I", "Intramuros"
+    binondo = "B", "Binondo"
+
+
 class room(models.Model):
-    building = models.CharField(max_length=100)
+    building = models.TextField(choices=buildings.choices)
     room_number = models.IntegerField()
     capacity = models.IntegerField()
     type = models.TextField(choices=roomtype.choices)
@@ -99,7 +109,7 @@ class scheduleentry(models.Model):
         constraints = [
 
             models.UniqueConstraint(
-                fields=['teacher, timeslot'],
+                fields=['teacher', 'timeslot'],
                 name = 'unique_teacher_slot'
             ),
 
