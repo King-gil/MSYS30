@@ -1,18 +1,10 @@
 from django.db import models
 
 class grade_level(models.IntegerChoices):
-    grade_1 = 1, 'Grade 1'
-    grade_2 = 2, 'Grade 2'
-    grade_3 = 3, 'Grade 3'
-    grade_4 = 4, 'Grade 4'
-    grade_5 = 5, 'Grade 5'
-    grade_6 = 6, 'Grade 6'
     grade_7 = 7, 'Grade 7'
     grade_8 = 8, 'Grade 8'
     grade_9 = 9, 'Grade 9'
     grade_10 = 10, 'Grade 10'
-    grade_11 = 11, 'Grade 11'
-    grade_12 = 12, 'Grade 12'
 
 class subjectslist(models.IntegerChoices):
     recess = 0, "Recess"
