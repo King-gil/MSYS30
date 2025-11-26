@@ -42,7 +42,7 @@ class student(models.Model):
         return f"{self.name} ({self.section})"
 
 class teacher(models.Model):
-    name = models.CharField(max_length=300)
+    name = models.CharField(max_length=200)
     max_weekly_hours = models.IntegerField(default=30)
     subject_taught = models.IntegerField(choices=subjectslist.choices)
 
