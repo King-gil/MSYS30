@@ -1,0 +1,98 @@
+{% extends 'class_scheduler_app/base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="mb-4 text-center">Teacher Availability Sorting & Assignment</h1>
+
+    <!-- Sort Section -->
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <h4 class="card-title">Sort Teachers by Availability</h4>
+            <p class="text-muted">Sort in ascending order of available blocks (1–11).</p>
+
+            <button id="sortButton" class="btn btn-primary">
+                Sort Teachers (QuickSort)
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Teachers Table -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h4 class="card-title">Teacher List</h4>
+
+            <table class="table table-striped" id="teachersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Availability (Blocks)</th>
+                        <th>Assign to Section</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in teacher %}
+                    <tr data-availability="{{ t.availability|length }}">
+                        <td>{{ t.name }}</td>
+                        <td>{{ t.get_subject_taught_display }}</td>
+                        <td>{{ t.availability }}</td>
+                        <td>
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <select name="section_id" class="form-select">
+                                    {% for section in sections %}
+                                        <option value="{{ section.id }}">
+                                            {{ section.grade_level }} - {{ section.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-success btn-sm mt-2">Assign</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+// -------------------------
+// QUICK SORT IMPLEMENTATION
+// -------------------------
+
+function quicksort(rows) {
+    if (rows.length <= 1) return rows;
+
+    let pivot = rows[0];
+    let pivotValue = parseInt(pivot.dataset.availability);
+
+    let left = [];
+    let right = [];
+
+    for (let i = 1; i < rows.length; i++) {
+        let value = parseInt(rows[i].dataset.availability);
+        if (value < pivotValue) left.push(rows[i]);
+        else right.push(rows[i]);
+    }
+
+    return [...quicksort(left), pivot, ...quicksort(right)];
+}
+
+// Button click to sort table
+document.getElementById("sortButton").addEventListener("click", function() {
+    let tableBody = document.querySelector("#teachersTable tbody");
+    let rows = Array.from(tableBody.querySelectorAll("tr"));
+
+    let sorted = quicksort(rows);
+    tableBody.innerHTML = "";
+    sorted.forEach(r => tableBody.appendChild(r));
+});
+</script>
+
+{% endblock %}

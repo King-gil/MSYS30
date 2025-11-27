@@ -69,3 +69,11 @@ class Teacher(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.get_subject_taught_display()}"
+    
+class Assignment(models.Model):
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.section} - {self.subject} - {self.teacher}"
