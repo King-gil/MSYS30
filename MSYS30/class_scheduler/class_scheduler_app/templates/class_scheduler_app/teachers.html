@@ -4,10 +4,10 @@
 <div class="col-10 mx-auto">
     <div class="row justify-content-between">
         <div class="col-auto mr-auto">
-            <h2>Employees</h2>
+            <h2>Teachers</h2>
         </div>
         <div class="col-auto mr-auto">
-            <a href="{% url 'home_page' %}" class="btn btn-secondary">+ New Schedule</a>
+            <a href="" class="btn btn-secondary">+ New Schedule</a>
         </div>
     </div>
 </div>
@@ -16,20 +16,16 @@
     <table class="table table-hover table-bordered mb-5">
         <thead class="table-dark">
             <th class="p-2" scope="col"> Name </th>
-            <th class="p-2" scope="col"> ID Number </th>
-            <th class="p-2" scope="col"> Rate </th>
-            <th class="p-2" scope="col"> Allowance </th>
-            <th class="p-2" scope="col"> Overtime </th>
+            <th class="p-2" scope="col"> Maximum Weekly Hours </th>
+            <th class="p-2" scope="col"> Subject Taught </th>
             <th class="p-2 text-center" scope="col"> Options </th>
         </thead>
         <tbody>
-            {% for e in employee %}
+            {% for t in teacher %}
             <tr>
-                <td class="p-3"> {{ e.name }} </td>
-                <td class="p-3"> {{ e.id_number }} </td>
-                <td class="p-3"> {{ e.rate|floatformat:2 }} </td>
-                <td class="p-3"> {{ e.allowance|floatformat:2 }} </td>
-                <td class="p-3"> {{ e.overtime_pay|floatformat:2 }} </td>
+                <td class="p-3"> {{ t.name }} </td>
+                <td class="p-3"> {{ t.max_weekly_hours }} </td>
+                <td class="p-3"> {{ t.get_subject_taught_display }} </td>
                 <td class="p-3">
                     <div class="row">
                         <div class="col">

@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from .models import Teacher
 
 # Create your views here.
-def hello_world(request): 
-    return render (request, 'class_scheduler_app/Home_page.html')
+def teachers(request): 
+    teacher = Teacher.objects.all()
+    return render (request, 'class_scheduler_app/teachers.html', {'teacher': teacher} )

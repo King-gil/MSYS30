@@ -1,12 +1,12 @@
 from django.db import models
 
-class grade_level(models.IntegerChoices):
+class Grade_level(models.IntegerChoices):
     grade_7 = 7, 'Grade 7'
     grade_8 = 8, 'Grade 8'
     grade_9 = 9, 'Grade 9'
     grade_10 = 10, 'Grade 10'
 
-class subjectslist(models.IntegerChoices):
+class Subjectslist(models.IntegerChoices):
     science = 1, "Science"
     filipino = 2, "Filipino"
     english = 3, "English"
@@ -17,31 +17,31 @@ class subjectslist(models.IntegerChoices):
     mapeh = 8, "MAPEH"
     homeroom = 9, "Homeroom Guidance Program"
 
-class subject(models.Model):
-    subject_title = models.IntegerField(choices=subjectslist.choices)
+class Subject(models.Model):
+    subject_title = models.IntegerField(choices=Subjectslist.choices)
     sessions_per_week = models.IntegerField(default=5, editable=False)
     duration_minutes = models.IntegerField(default=60, editable=False)
 
     def __str__(self):
         return f"{self.get_subject_title_display()}"
 
-class section(models.Model): 
+class Section(models.Model): 
     name = models.CharField(max_length=100)
-    grade_level = models.IntegerField(choices=grade_level.choices)
-    subjects = models.ManyToManyField(subject, blank=True)
+    grade_level = models.IntegerField(choices=Grade_level.choices)
+    subjects = models.ManyToManyField(Subject, blank=True)
 
     def __str__(self):
         return f"{self.grade_level} - {self.name}"
 
-class teacher(models.Model):
+class Teacher(models.Model):
     name = models.CharField(max_length=200)
     max_weekly_hours = models.IntegerField(default=30)
-    subject_taught = models.IntegerField(choices=subjectslist.choices)
+    subject_taught = models.IntegerField(choices=Subjectslist.choices)
 
     def __str__(self):
         return f"{self.name} - {self.get_subject_taught_display()}"
 
-class days(models.TextChoices):
+class Days(models.TextChoices):
     monday = "M", "Monday"
     tuesday = "T", "Tuesday"
     wednesday = "W", "Wednesday"
@@ -49,15 +49,15 @@ class days(models.TextChoices):
     friday = "F", "Friday"
     saturday = "S", "Saturday"
 
-class roomtype(models.TextChoices):
+class Roomtype(models.TextChoices):
     classroom = "C", "Classroom"
     laboratory = "L", "Laboratory"
     gym = "G", "Gymnasium"
 
-class room(models.Model):
+class Room(models.Model):
     room_number = models.IntegerField()
     capacity = models.IntegerField(default=30, editable=False)
-    type = models.TextField(choices=roomtype.choices)
+    type = models.TextField(choices=Roomtype.choices)
 
     def __str__(self):
         return f"{self.room_number}"
