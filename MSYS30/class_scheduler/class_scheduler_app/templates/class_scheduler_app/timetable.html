@@ -28,8 +28,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Subject</th>
-                        <th>Availability (Blocks)</th>
-                        <th>Assign to Section</th>
+                        <th>Availability (Periods)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,19 +37,6 @@
                         <td>{{ t.name }}</td>
                         <td>{{ t.get_subject_taught_display }}</td>
                         <td>{{ t.availability }}</td>
-                        <td>
-                            <form action="" method="POST">
-                                {% csrf_token %}
-                                <select name="section_id" class="form-select">
-                                    {% for section in sections %}
-                                        <option value="{{ section.id }}">
-                                            {{ section.grade_level }} - {{ section.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <button class="btn btn-success btn-sm mt-2">Assign</button>
-                            </form>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

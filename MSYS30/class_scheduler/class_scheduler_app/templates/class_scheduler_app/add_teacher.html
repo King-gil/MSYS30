@@ -1,0 +1,51 @@
+{% extends 'class_scheduler_app/base.html' %}
+{% block content %}
+<div class="col-6 mb-5">
+    <div class="card">
+        <div class="card-header">
+            <h5>Add Teacher</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'add_teacher' %}">{% csrf_token %} <!-- add smth in action-->
+
+                <div class="row mt-2">
+                    <label for="name" class="form-label"><h6>Name:</h6></label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="row mt-2">
+                    <label for="subject_taught" class="form-label"><h6>Subject Taught:</h6></label>
+                    <select name="subject_taught" id="subject_taught" class="form-select" required>
+                        <option value="" selected disabled>Choose...</option>
+                        {% for value, label in subjects_list.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                <div class="row mt-2">
+                    <label for="availability_choice" class="form-label"><h6>Availability Choice:</h6></label>
+                    <select name="availability_choice" id="availability_choice" class="form-select" required>
+                        <option value="" selected disabled>Choose...</option>
+                        {% for value, label in teacheravailability.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row mt-2">
+                    <label for="max_weekly_hours" class="form-label"><h6>Max Weekly Hours:</h6></label>
+                    <input type="number" class="form-control" id="max_weekly_hours" name="max_weekly_hours" value=30 required> <!-- edit this -->
+                </div>
+                <div class="row mt-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-3 alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </form>                
+        </div>
+    </div>
+</div>
+{% endblock %}

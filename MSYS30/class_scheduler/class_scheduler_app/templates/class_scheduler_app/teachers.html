@@ -7,7 +7,7 @@
             <h2>Teachers</h2>
         </div>
         <div class="col-auto mr-auto">
-            <a href="" class="btn btn-secondary">+ Add Teacher</a>
+            <a href="{% url 'add_teacher' %}" class="btn btn-secondary">+ Add Teacher</a>
         </div>
     </div>
 </div>
@@ -23,7 +23,7 @@
             {% for t in teacher %}
             <tr>
                 <td class="p-3"> {{ t.name }} </td>
-                <td class="p-3"> Periods Available: {% for a in t.availability %} {{ a }} {% endfor %} </td>
+                <td class="p-3"> {% for a in t.availability %} {{ a }} <br> {% endfor %} </td>
                 <td class="p-3"> {{ t.get_subject_taught_display }} </td>
             </tr>
             {% endfor %}

@@ -7,7 +7,7 @@
             <h2>Sections</h2>
         </div>
         <div class="col-auto mr-auto">
-            <a href="" class="btn btn-secondary">+ Add Section</a>
+            <a href="{% url 'add_section' %}" class="btn btn-secondary">+ Add Section</a>
         </div>
     </div>
 </div>
@@ -26,9 +26,9 @@
             <tr>
                 <td class="p-3"> {{ s.name }} </td>
                 <td class="p-3"> {{ s.grade_level }} </td>
-                <td class="p-3"> {% for a in s.subjects.all %} {{ a }} {% endfor %} </td>
+                <td class="p-3"> {% for a in s.subjects.all %} {{ a }} <br> {% endfor %} </td>
                 <td class="p-3"> {{ s.room }} </td>
-                <td class="p-3"> Periods Available: {% for a in s.availability %} {{ a }} {% endfor %} </td>
+                <td class="p-3"> {% for a in s.availability %} {{ a }} <br> {% endfor %} </td>
             </tr>
             {% endfor %}
         </tbody>

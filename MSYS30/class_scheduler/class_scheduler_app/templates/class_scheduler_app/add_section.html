@@ -1,0 +1,59 @@
+{% extends 'class_scheduler_app/base.html' %}
+{% block content %}
+<div class="col-6 mb-5">
+    <div class="card">
+        <div class="card-header">
+            <h5>Add Section</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'add_section' %}">{% csrf_token %}
+
+                <div class="row mt-2">
+                    <label for="name" class="form-label"><h6>Name:</h6></label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="row mt-2">
+                    <label for="grade_level" class="form-label"><h6>Grade Level:</h6></label>
+                    <select name="grade_level" id="grade_level" class="form-select" required>
+                        <option value="" selected disabled>Choose...</option>
+                        {% for value, label in grade_level.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                <div class="row mt-2">
+                    <label class="form-label"><h6>Subjects:</h6></label>
+                    {% for value, label in subjects_list.choices %}
+                    <div class="form-check">
+                        <input class="form-check-input" name="subjects_list" type="checkbox" value="{{ value }}" id="subject_{{ value }}" checked>
+                        
+                        <label class="form-check-label" for="subject_{{ value }}">
+                            {{ label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="row mt-2">
+                    <label for="room_type" class="form-label"><h6>Room Type:</h6></label>
+                    <select name="room_type" id="room_type" class="form-select" required>
+                        <option value="" selected disabled>Choose...</option>
+                        {% for value, label in room_type.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row mt-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-3 alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </form>                
+        </div>
+    </div>
+</div>
+{% endblock %}
