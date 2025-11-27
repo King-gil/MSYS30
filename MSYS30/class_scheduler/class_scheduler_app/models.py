@@ -7,31 +7,31 @@ class grade_level(models.IntegerChoices):
     grade_10 = 10, 'Grade 10'
 
 class subjectslist(models.IntegerChoices):
-    recess = 0, "Recess"
-    lunch_break = 1, "Lunch Break"
-    science = 2, "Science"
-    filipino = 3, "Filipino"
-    english = 4, "English"
-    math = 5, "Mathematics"
-    ap = 6, "Araling Panlipunan"
-    esp  = 7, "Edukasyon sa Pagpapakatao"
-    tle = 8, "Technology and Livelihood Education"
-    mapeh = 9, "MAPEH"
-    homeroom = 10, "HGP"
+    science = 1, "Science"
+    filipino = 2, "Filipino"
+    english = 3, "English"
+    math = 4, "Mathematics"
+    ap = 5, "Araling Panlipunan"
+    esp  = 6, "Edukasyon sa Pagpapakatao"
+    tle = 7, "Technology and Livelihood Education"
+    mapeh = 8, "MAPEH"
+    homeroom = 9, "Homeroom Guidance Program"
+
+class subject(models.Model):
+    subject_title = models.IntegerField(choices=subjectslist.choices)
+    sessions_per_week = models.IntegerField(default=5, editable=False)
+    duration_minutes = models.IntegerField(default=60, editable=False)
+
+    def __str__(self):
+        return f"{self.get_subject_title_display()}"
 
 class section(models.Model): 
     name = models.CharField(max_length=100)
     grade_level = models.IntegerField(choices=grade_level.choices)
+    subjects = models.ManyToManyField(subject, blank=True)
 
     def __str__(self):
         return f"{self.grade_level} - {self.name}"
-    
-class student(models.Model):
-    name = models.CharField(max_length=300)
-    section = models.ForeignKey(section, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.name} ({self.section})"
 
 class teacher(models.Model):
     name = models.CharField(max_length=200)
@@ -39,7 +39,7 @@ class teacher(models.Model):
     subject_taught = models.IntegerField(choices=subjectslist.choices)
 
     def __str__(self):
-        return f"{self.teacher}"
+        return f"{self.name} - {self.get_subject_taught_display()}"
 
 class days(models.TextChoices):
     monday = "M", "Monday"
@@ -49,72 +49,15 @@ class days(models.TextChoices):
     friday = "F", "Friday"
     saturday = "S", "Saturday"
 
-class teacheravailability(models.Model):
-    teacher = models.ForeignKey(teacher, on_delete=models.CASCADE)
-    day = models.TextField(choices=days.choices)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    is_available = models.BooleanField(default=True)
-
-
 class roomtype(models.TextChoices):
     classroom = "C", "Classroom"
     laboratory = "L", "Laboratory"
     gym = "G", "Gymnasium"
 
-class buildings(models.TextChoices):
-    luneta = "L", "Luneta"
-    intramuros = "I", "Intramuros"
-    binondo = "B", "Binondo"
-
-
 class room(models.Model):
-    building = models.TextField(choices=buildings.choices)
     room_number = models.IntegerField()
-    capacity = models.IntegerField()
+    capacity = models.IntegerField(default=30, editable=False)
     type = models.TextField(choices=roomtype.choices)
 
     def __str__(self):
-        return f"{self.building}, {self.room_number}"
-
-class subject(models.Model):
-    subject_title = models.IntegerField(choices=subjectslist.choices)
-    grade_level = models.IntegerField(choices=grade_level.choices)
-    sessions_per_week = models.IntegerField()
-    duration_minutes = models.IntegerField()
-
-class timeslot(models.Model):
-    day = models.TextField(choices=days.choices)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-
-class scheduleentry(models.Model):
-    section = models.ForeignKey(section, on_delete=models.CASCADE)
-    subject = models.ForeignKey(subject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(teacher, on_delete=models.CASCADE)
-    room = models.ForeignKey(room, on_delete=models.CASCADE)
-    timeslot = models.ForeignKey(timeslot, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name_plural = "Schedule Entries"
-
-        constraints = [
-
-            models.UniqueConstraint(
-                fields=['teacher', 'timeslot'],
-                name = 'unique_teacher_slot'
-            ),
-
-            models.UniqueConstraint(
-                fields=['room', 'timeslot'],
-                name='unique_room_slot'
-            ),
-
-            models.UniqueConstraint(
-                fields=['section', 'timeslot'],
-                name='unique_section_slot'
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.section} | {self.subject} | {self.timeslot}"
+        return f"{self.room_number}"
