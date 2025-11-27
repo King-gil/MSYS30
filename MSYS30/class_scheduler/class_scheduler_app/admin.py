@@ -3,4 +3,4 @@ from .models import *
 # Register your models here.
 
 
-admin.site.register([Section, Teacher, Room, Subject])
+admin.site.register([Section, Teacher, Subject])

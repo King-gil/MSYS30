@@ -17,6 +17,10 @@ class Subjectslist(models.IntegerChoices):
     mapeh = 8, "MAPEH"
     homeroom = 9, "Homeroom Guidance Program"
 
+class Roomtype(models.TextChoices):
+    classroom = "Classroom", "Classroom"
+    laboratory = "Laboratory", "Laboratory"
+
 class Subject(models.Model):
     subject_title = models.IntegerField(choices=Subjectslist.choices)
     sessions_per_week = models.IntegerField(default=5, editable=False)
@@ -29,35 +33,27 @@ class Section(models.Model):
     name = models.CharField(max_length=100)
     grade_level = models.IntegerField(choices=Grade_level.choices)
     subjects = models.ManyToManyField(Subject, blank=True)
+    room = models.TextField(choices=Roomtype.choices)
 
     def __str__(self):
         return f"{self.grade_level} - {self.name}"
 
+class Teacheravailability(models.TextChoices):
+    unavailable = "Unavailable", "Unavailable"
+    morning = "Available Morning Weekly", "Available Morning Weekly"
+    afternoon = "Available Afternoon Weekly", "Available Afternoon Weekly"
+    available = "Available Whole Day Weekly", "Available Whole Day Weekly"
+
 class Teacher(models.Model):
     name = models.CharField(max_length=200)
-    max_weekly_hours = models.IntegerField(default=30)
     subject_taught = models.IntegerField(choices=Subjectslist.choices)
+    availability = models.TextField(choices=Teacheravailability.choices, default=Teacheravailability.unavailable)
 
     def __str__(self):
         return f"{self.name} - {self.get_subject_taught_display()}"
 
-class Days(models.TextChoices):
-    monday = "M", "Monday"
-    tuesday = "T", "Tuesday"
-    wednesday = "W", "Wednesday"
-    thursday = "TH", "Thursday"
-    friday = "F", "Friday"
-    saturday = "S", "Saturday"
 
-class Roomtype(models.TextChoices):
-    classroom = "C", "Classroom"
-    laboratory = "L", "Laboratory"
-    gym = "G", "Gymnasium"
-
-class Room(models.Model):
-    room_number = models.IntegerField()
-    capacity = models.IntegerField(default=30, editable=False)
-    type = models.TextField(choices=Roomtype.choices)
 
     def __str__(self):
         return f"{self.room_number}"
+
