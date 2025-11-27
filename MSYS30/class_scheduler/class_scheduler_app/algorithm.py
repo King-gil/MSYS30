@@ -1,78 +1,111 @@
-from .models import * 
+from .models import Teacher, Section, Subject, Assignment
+
+# DEFINING THE BREAKS
+RECESS_PERIOD = 4
+LUNCH_PERIOD = 7
+FORBIDDEN_SLOTS = {RECESS_PERIOD, LUNCH_PERIOD}
 
 def quicksort_teachers(teachers):
     if len(teachers) <= 1:
         return teachers
-
+    
     pivot = teachers[len(teachers) // 2]
-    pivot_len = len(pivot.availability)
+    # Calculate availability excluding breaks
+    pivot_len = len(set(pivot.availability) - FORBIDDEN_SLOTS)
 
-    left = [t for t in teachers if len(t.availability) < pivot_len]
-    middle = [t for t in teachers if len(t.availability) == pivot_len]
-    right = [t for t in teachers if len(t.availability) > pivot_len]
+    left = [t for t in teachers if len(set(t.availability) - FORBIDDEN_SLOTS) < pivot_len]
+    middle = [t for t in teachers if len(set(t.availability) - FORBIDDEN_SLOTS) == pivot_len]
+    right = [t for t in teachers if len(set(t.availability) - FORBIDDEN_SLOTS) > pivot_len]
 
     return quicksort_teachers(left) + middle + quicksort_teachers(right)
 
 def assign_teachers_to_sections(sections, teachers):
-    # Step 1: Sort teachers (Least available first is usually better constraint logic)
-    sorted_teachers = quicksort_teachers(teachers)
-
+    sorted_teachers = quicksort_teachers(list(teachers))
     assignments = {}
     
-    # NEW: Track how many classes each teacher currently has
-    # Format: { TeacherID: Current_Load_Count }
+    # 1. Initialize Pools (Remove breaks immediately)
+    teacher_pool = {t.id: set(t.availability) - FORBIDDEN_SLOTS for t in teachers}
+    section_pool = {s.id: set(s.availability) - FORBIDDEN_SLOTS for s in sections}
+    
     teacher_loads = {t.id: 0 for t in teachers}
-
-    # NEW: Track occupied slots to prevent double booking
-    # Format: { TeacherID: Set(occupied_blocks) }
-    teacher_busy_slots = {t.id: set() for t in teachers}
 
     for section in sections:
         assigned_subjects = {}
 
+        # 2. Loop through subjects
         for subject in section.subjects.all():
-            assigned_teacher = None
+            assigned_data = None
+            target_subject_id = subject.subject_title
 
             for teacher in sorted_teachers:
-                # 1. Match Subject
-                if teacher.subject_taught != subject.subject_title:
+                # A. Match Subject
+                if teacher.subject_taught != target_subject_id:
                     continue
-                
-                # 2. Check Max Load (Don't use teacher if they are full)
+
+                # B. Check Max Load
                 if teacher_loads[teacher.id] >= teacher.max_weekly_loads:
                     continue
 
-                # 3. Check Availability Intersection
-                # We need to ensure the teacher is free at the specific time the SECTION needs
-                # (Assuming section.availability is the list of blocks the section needs filled)
+                # C. Find Common Slots
+                current_teacher_slots = teacher_pool[teacher.id]
+                current_section_slots = section_pool[section.id]
+                common_slots = current_teacher_slots.intersection(current_section_slots)
                 
-                # Calculate what blocks are actually viable
-                # (Section needs) INTERSECT (Teacher is Free) MINUS (Teacher is already busy)
-                
-                section_needs = set(section.availability) # e.g. {1, 2, 3...}
-                teacher_free = set(teacher.availability)
-                teacher_busy = teacher_busy_slots[teacher.id]
-                
-                # Find a valid slot that matches
-                viable_slots = (section_needs & teacher_free) - teacher_busy
-
-                if viable_slots:
-                    # Assign the teacher
-                    assigned_teacher = teacher
+                if common_slots:
+                    # --- THE FIX IS HERE ---
+                    # We SORT the common slots and pick the FIRST one.
+                    # This forces the class into the earliest possible period (e.g., Period 6 before Period 11)
+                    chosen_slot = sorted(list(common_slots))[0]
                     
-                    # Update trackers
+                    # Update Pools & Load
+                    teacher_pool[teacher.id].remove(chosen_slot)
+                    section_pool[section.id].remove(chosen_slot)
                     teacher_loads[teacher.id] += 1
                     
-                    # Important: We need to know WHICH slot was chosen.
-                    # For this simple logic, let's assume we pick the first viable slot
-                    chosen_slot = list(viable_slots)[0] 
-                    teacher_busy_slots[teacher.id].add(chosen_slot)
-                    
-                    # DO NOT REMOVE THE TEACHER FROM THE LIST
+                    assigned_data = {
+                        'teacher': teacher,
+                        'slot': chosen_slot,
+                        'type': 'academic'
+                    }
                     break
 
-            assigned_subjects[subject.subject_title] = assigned_teacher
+            if assigned_data:
+                assigned_subjects[subject.subject_title] = assigned_data
+            else:
+                assigned_subjects[subject.subject_title] = "UNASSIGNED"
+
+        # 3. Inject Breaks for Display
+        assigned_subjects["RECESS"] = {'teacher': None, 'slot': RECESS_PERIOD, 'type': 'break'}
+        assigned_subjects["LUNCH"] = {'teacher': None, 'slot': LUNCH_PERIOD, 'type': 'break'}
 
         assignments[section.name] = assigned_subjects
-    print(assignments)
+
+    print_debug_schedule(assignments)
     return assignments
+
+def print_debug_schedule(assignments):
+    print("\n" + "="*50)
+    print(" GENERATED SCHEDULE (Optimized)")
+    print("="*50)
+    
+    for section_name, subjects in assignments.items():
+        print(f"SECTION: {section_name}")
+        
+        # Sort output by Period so it looks like a real timeline
+        def get_slot_key(item):
+            key, val = item
+            if val == "UNASSIGNED": return 999
+            return val['slot']
+
+        sorted_subs = sorted(subjects.items(), key=get_slot_key)
+
+        for subj_code, data in sorted_subs:
+            if data == "UNASSIGNED":
+                 print(f"  - {str(subj_code):<15}: [!] NO TEACHER FOUND (Max Load Reached?)")
+            elif data['type'] == 'break':
+                 print(f"  - {'*** ' + str(subj_code) + ' ***':<15}: ---------------- Period {data['slot']}")
+            else:
+                 t_name = data['teacher'].name
+                 slot = data['slot']
+                 print(f"  - {str(subj_code):<15}: {t_name:<20} | Period {slot}")
+        print("-" * 50)
