@@ -5,7 +5,6 @@
 
     <h1 class="mb-4 text-center">Teacher Availability Sorting & Assignment</h1>
 
-    <!-- Sort Section -->
     <div class="card mb-4 shadow">
         <div class="card-body">
             <h4 class="card-title">Sort Teachers by Availability</h4>
@@ -17,8 +16,6 @@
         </div>
     </div>
 
-
-    <!-- Teachers Table -->
     <div class="card shadow mb-4">
         <div class="card-body">
             <h4 class="card-title">Teacher List</h4>
@@ -48,9 +45,6 @@
 </div>
 
 <script>
-// -------------------------
-// QUICK SORT IMPLEMENTATION
-// -------------------------
 
 function quicksort(rows) {
     if (rows.length <= 1) return rows;
@@ -70,7 +64,6 @@ function quicksort(rows) {
     return [...quicksort(left), pivot, ...quicksort(right)];
 }
 
-// Button click to sort table
 document.getElementById("sortButton").addEventListener("click", function() {
     let tableBody = document.querySelector("#teachersTable tbody");
     let rows = Array.from(tableBody.querySelectorAll("tr"));
