@@ -23,17 +23,19 @@ class Roomtype(models.TextChoices):
 
 class Subject(models.Model):
     subject_title = models.IntegerField(choices=Subjectslist.choices)
-    sessions_per_week = models.IntegerField(default=5, editable=False)
-    duration_minutes = models.IntegerField(default=60, editable=False)
 
     def __str__(self):
         return f"{self.get_subject_title_display()}"
+
+def default_availability():
+    return list(range(1, 12))
 
 class Section(models.Model): 
     name = models.CharField(max_length=100)
     grade_level = models.IntegerField(choices=Grade_level.choices)
     subjects = models.ManyToManyField(Subject, blank=True)
-    room = models.TextField(choices=Roomtype.choices)
+    room = models.TextField(choices=Roomtype.choices, default=Roomtype.classroom)
+    availability = models.JSONField(default=default_availability)
 
     def __str__(self):
         return f"{self.grade_level} - {self.name}"
@@ -47,13 +49,23 @@ class Teacheravailability(models.TextChoices):
 class Teacher(models.Model):
     name = models.CharField(max_length=200)
     subject_taught = models.IntegerField(choices=Subjectslist.choices)
-    availability = models.TextField(choices=Teacheravailability.choices, default=Teacheravailability.unavailable)
+    availability_choice = models.TextField(
+        choices=Teacheravailability.choices,
+        default=Teacheravailability.unavailable
+    )
+    availability = models.JSONField(default=list, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.availability_choice == Teacheravailability.unavailable:
+            self.availability = []
+        elif self.availability_choice == Teacheravailability.morning:
+            self.availability = [1,2,3,4,5,6]
+        elif self.availability_choice == Teacheravailability.afternoon:
+            self.availability = [7,8,9,10,11]
+        elif self.availability_choice == Teacheravailability.available:
+            self.availability = [1,2,3,4,5,6,7,8,9,10,11]
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} - {self.get_subject_taught_display()}"
-
-
-
-    def __str__(self):
-        return f"{self.room_number}"
-

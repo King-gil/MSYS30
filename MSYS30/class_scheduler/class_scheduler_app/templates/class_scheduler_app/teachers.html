@@ -23,7 +23,7 @@
             {% for t in teacher %}
             <tr>
                 <td class="p-3"> {{ t.name }} </td>
-                <td class="p-3"> {{ t.availability }} </td>
+                <td class="p-3"> Periods Available: {% for a in t.availability %} {{ a }} {% endfor %} </td>
                 <td class="p-3"> {{ t.get_subject_taught_display }} </td>
             </tr>
             {% endfor %}
