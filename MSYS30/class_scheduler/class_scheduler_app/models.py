@@ -54,6 +54,7 @@ class Teacher(models.Model):
         default=Teacheravailability.unavailable
     )
     availability = models.JSONField(default=list, blank=True)
+    max_weekly_loads = models.IntegerField(default=30)
 
     def save(self, *args, **kwargs):
         if self.availability_choice == Teacheravailability.unavailable:
