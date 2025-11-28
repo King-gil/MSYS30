@@ -21,17 +21,11 @@ def quicksort_teachers(teachers):
 def find_common_slot_binary(section_slots, teacher_slots):
     """
     BINARY SEARCH HELPER:
-    Iterates through Section slots (already sorted) and binary searches
-    for them in the Teacher slots. Returns the first match.
+    Iterates through sorted Sections and binary searches for them in the Teachers. Returns the first match.
     """
 
-    # GeeksforGeeks. (2025, August 1). Bisect Algorithm functions in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/bisect-algorithm-functions-in-python/
-    
     for slot in section_slots:
-        # bisect_left returns the insertion point index
         idx = bisect.bisect_left(teacher_slots, slot)
-        
-        # Check if the index is within bounds and the value actually matches
         if idx < len(teacher_slots) and teacher_slots[idx] == slot:
             return slot
     return None
@@ -39,12 +33,10 @@ def find_common_slot_binary(section_slots, teacher_slots):
 def assign_teachers_to_sections(sections, teachers):
     sorted_teachers = quicksort_teachers(list(teachers))
     assignments = {}
-    
-    # 1. INITIALIZE POOLS AS SORTED LISTS
-    # We use sorted lists now to enable Binary Search
+# initialization
     teacher_pool = {}
     for t in teachers:
-        # Convert set to sorted list
+        # convert set to sorted list
         valid_slots = sorted(list(set(t.availability) - FORBIDDEN_SLOTS))
         teacher_pool[t.id] = valid_slots
 
@@ -63,24 +55,21 @@ def assign_teachers_to_sections(sections, teachers):
             target_subject_id = subject.subject_title
 
             for teacher in sorted_teachers:
-                # A. Match Subject
+                # mathing subjects
                 if teacher.subject_taught != target_subject_id:
                     continue
 
-                # B. Check Max Load
+                # checking teacher max loads
                 if teacher_loads[teacher.id] >= teacher.max_weekly_loads:
                     continue
 
-                # C. BINARY SEARCH FOR SLOT
+                # Binary Search for Slots
                 current_teacher_slots = teacher_pool[teacher.id]
                 current_section_slots = section_pool[section.id]
-                
-                # Perform Binary Search
                 chosen_slot = find_common_slot_binary(current_section_slots, current_teacher_slots)
                 
                 if chosen_slot is not None:
-                    # Update Pools & Load
-                    # Note: Removing from list is O(N), but acceptable for small lists (size < 12)
+                    # update the teacher, section pools and add teacher load (since there is a chosen slot)
                     teacher_pool[teacher.id].remove(chosen_slot)
                     section_pool[section.id].remove(chosen_slot)
                     teacher_loads[teacher.id] += 1
@@ -97,16 +86,16 @@ def assign_teachers_to_sections(sections, teachers):
             else:
                 assigned_subjects[subject.subject_title] = "UNASSIGNED"
 
-        # 3. Inject Breaks
+        # breaks (Recess, Lunch)
         assigned_subjects["RECESS"] = {'teacher': None, 'slot': RECESS_PERIOD, 'type': 'break'}
         assigned_subjects["LUNCH"] = {'teacher': None, 'slot': LUNCH_PERIOD, 'type': 'break'}
 
         assignments[section.name] = assigned_subjects
 
-    print_debug_schedule(assignments)
+    # print_debug_schedule(assignments)
     return assignments
 
-def print_debug_schedule(assignments):
+''' def print_debug_schedule(assignments):
     print("\n" + "="*60)
     print(" GENERATED SCHEDULE (Binary Search)")
     print("="*60)
@@ -130,4 +119,4 @@ def print_debug_schedule(assignments):
                  t_name = data['teacher'].name
                  slot = data['slot']
                  print(f"  - {str(subj_code):<20}: {t_name:<20} | Period {slot}")
-        print("-" * 60)
+        print("-" * 60) '''
