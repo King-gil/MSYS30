@@ -26,9 +26,9 @@
             <tr>
                 <td class="p-3"> {{ s.name }} </td>
                 <td class="p-3"> {{ s.grade_level }} </td>
-                <td class="p-3"> {% for a in s.subjects.all %} {{ a }} <br> {% endfor %} </td>
+                <td class="p-3"> All Subjects </td>
                 <td class="p-3"> {{ s.room }} </td>
-                <td class="p-3"> {% for a in s.availability %} {{ a }} <br> {% endfor %} </td>
+                <td class="p-3"> Whole Day </td>
             </tr>
             {% endfor %}
         </tbody>
