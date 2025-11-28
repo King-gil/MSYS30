@@ -48,8 +48,10 @@ def add_section(request):
     else:
         return render(request, 'class_scheduler_app/add_section.html', {"grade_level": Grade_level, "subjects_list": Subjectslist, "room_type": Roomtype})
 
-def prepare_schedule_for_template(assignments):
+def prepare_schedule_for_template(assignments, sections):
     view_data = []
+
+    section_rooms = {s.name: s.room for s in sections}
 
     for section_name, subjects_data in assignments.items():
         def get_slot_key(item):
@@ -96,7 +98,8 @@ def prepare_schedule_for_template(assignments):
 
         view_data.append({
             'section_name': section_name,
-            'schedule': section_schedule
+            'schedule': section_schedule,
+            'room': section_rooms.get(section_name, "TBD")
         })
     
     return view_data
@@ -104,11 +107,13 @@ def prepare_schedule_for_template(assignments):
 def schedule_view_generated(request):
     sections = list(Section.objects.prefetch_related('subjects').all())
     teachers = list(Teacher.objects.all())
+    s = Section.objects.all()
     
     raw_assignments = assign_teachers_to_sections(sections, teachers)
-    formatted_data = prepare_schedule_for_template(raw_assignments)
+    formatted_data = prepare_schedule_for_template(raw_assignments, sections)
 
     context = {
-        'schedule_data': formatted_data
+        'schedule_data': formatted_data,
+        's': s
     }
     return render(request, 'class_scheduler_app/timetables.html', context)

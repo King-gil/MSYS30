@@ -7,7 +7,10 @@
     {% for section in schedule_data %}
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-dark text-white">
-                <h4 class="m-0">Section: {{ section.section_name }}</h4>
+                <h4 class="m-0">
+                    Section: {{ section.section_name }} <br>
+                    Room: {{ section.room }}
+                </h4>
             </div>
             <div class="card-body p-0">
                 <table class="table table-bordered table-hover mb-0">
