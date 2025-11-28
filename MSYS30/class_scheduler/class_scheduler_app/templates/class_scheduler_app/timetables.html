@@ -1,0 +1,61 @@
+{% extends 'class_scheduler_app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Generated Schedules</h2>
+
+    {% for section in schedule_data %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4 class="m-0">Section: {{ section.section_name }}</h4>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%;">Period</th>
+                            <th style="width: 40%;">Subject</th>
+                            <th style="width: 50%;">Teacher / Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in section.schedule %}
+                            <tr class="{{ row.css_class }}">
+                                <td class="text-center font-weight-bold align-middle">
+                                    {{ row.slot }}
+                                </td>
+
+                                <td class="align-middle">
+                                    {% if row.is_break %}
+                                        <span class="font-weight-bold text-muted">{{ row.subject }}</span>
+                                    {% else %}
+                                        <span class="font-weight-bold">{{ row.subject }}</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="align-middle">
+                                    {% if row.is_unassigned %}
+                                        <span class="text-danger font-weight-bold">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> NO TEACHER FOUND
+                                        </span>
+                                    {% elif row.is_break %}
+                                        <span class="text-muted">---</span>
+                                    {% else %}
+                                        <span class="text-success">
+                                            <i class="bi bi-person-badge"></i> {{ row.teacher }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info">
+            No sections or schedule data found.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

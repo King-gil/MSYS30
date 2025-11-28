@@ -25,4 +25,5 @@ urlpatterns = [
     path('timetable/', views.schedule_view, name="timetable"),
     path('add_teacher/', views.add_teacher, name="add_teacher"),
     path('add_section/', views.add_section, name="add_section"),
+    path('generate_timetables/', views.schedule_view_generated, name="generated_timetables"),
 ]

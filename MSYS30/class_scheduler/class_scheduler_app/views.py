@@ -47,3 +47,68 @@ def add_section(request):
         return redirect('sections')
     else:
         return render(request, 'class_scheduler_app/add_section.html', {"grade_level": Grade_level, "subjects_list": Subjectslist, "room_type": Roomtype})
+
+def prepare_schedule_for_template(assignments):
+    view_data = []
+
+    for section_name, subjects_data in assignments.items():
+        def get_slot_key(item):
+            key, val = item
+            if val == "UNASSIGNED": return 999
+            return val['slot']
+
+        sorted_subs = sorted(subjects_data.items(), key=get_slot_key)
+        
+        section_schedule = []
+        
+        for subj_code, data in sorted_subs:
+            row = {
+                'subject': str(subj_code),
+                'is_break': False,
+                'is_unassigned': False,
+                'teacher': '',
+                'slot': '',
+                'css_class': ''
+            }
+
+            if data == "UNASSIGNED":
+                row['is_unassigned'] = True
+                row['css_class'] = 'table-danger'
+                row['slot'] = "N/A"
+
+                if isinstance(subj_code, int):
+                    row['subject'] = Subjectslist(subj_code).label
+            
+            elif data['type'] == 'break':
+                row['is_break'] = True
+                row['css_class'] = 'table-warning'
+                row['slot'] = data['slot']
+                row['subject'] = f"*** {subj_code} ***"
+            
+            else:
+                row['teacher'] = data['teacher'].name
+                row['slot'] = data['slot']
+                
+                if isinstance(subj_code, int):
+                    row['subject'] = Subjectslist(subj_code).label
+
+            section_schedule.append(row)
+
+        view_data.append({
+            'section_name': section_name,
+            'schedule': section_schedule
+        })
+    
+    return view_data
+
+def schedule_view_generated(request):
+    sections = list(Section.objects.prefetch_related('subjects').all())
+    teachers = list(Teacher.objects.all())
+    
+    raw_assignments = assign_teachers_to_sections(sections, teachers)
+    formatted_data = prepare_schedule_for_template(raw_assignments)
+
+    context = {
+        'schedule_data': formatted_data
+    }
+    return render(request, 'class_scheduler_app/timetables.html', context)
