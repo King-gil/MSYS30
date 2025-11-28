@@ -15,16 +15,16 @@
         
     </head>
     <body>
-        <nav class="navbar navbar-dark bg-custom mb-3 sticky-top" style="background-color: #7a0000;">
+        <nav class="navbar navbar-dark bg-custom mb-3 sticky-top" style="background-color: #aed057;">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <div class="navbar-brand me-auto">
-                    <a class="text-white text-decoration-none" href="{% url 'timetable' %}">Class Scheduler</a>
+                    <a class="text-black text-decoration-none" href="{% url 'timetable' %}">Class Scheduler</a>
                 </div>
                 
                 <div class="navbar-nav d-flex flex-row">
-                    <a class="nav-link text-white text-decoration-none me-3" href="{% url 'timetable' %}"><strong>Create Schedules</strong></a>
-                    <a class="nav-link text-white text-decoration-none me-3" href="{% url 'teachers' %}"><strong>Teachers</strong></a>
-                    <a class="nav-link text-white text-decoration-none" href="{% url 'sections' %}"><strong>Sections</strong></a>
+                    <a class="nav-link text-black text-decoration-none me-3" href="{% url 'timetable' %}"><strong>Create Schedules</strong></a>
+                    <a class="nav-link text-black text-decoration-none me-3" href="{% url 'teachers' %}"><strong>Teachers</strong></a>
+                    <a class="nav-link text-black text-decoration-none" href="{% url 'sections' %}"><strong>Sections</strong></a>
                 </div>
         
             </div>
@@ -36,8 +36,8 @@
                 {% endblock %}
             </div>
         </div>
-        <nav class="navbar bg-custom fixed-bottom justify-content-center" style="background: #680000;">
-            <div style="color: white;">&copy; 2025</div>
+        <nav class="navbar bg-custom fixed-bottom justify-content-center" style="background: #aed057;">
+            <div style="color: black;">&copy; 2025</div>
         </nav>
     </body>
 </html>
